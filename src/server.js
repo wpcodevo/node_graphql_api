@@ -10,10 +10,19 @@ import { Mutation, Query } from './resolvers/index.js';
 import DateTime from './resolvers/datetime.js';
 import getAuthUser from './middleware/authUser.js';
 
+process.on('uncaughtException', (err) => {
+  console.log('uncaughtException', err);
+  process.exit(1);
+});
+
 const httpServer = http.createServer(app);
 
 const corsOptions = {
-  origin: ['https://studio.apollographql.com', 'http://localhost:8000'],
+  origin: [
+    'https://studio.apollographql.com',
+    'http://localhost:8000',
+    'http://localhost:3000',
+  ],
   credentials: true,
 };
 

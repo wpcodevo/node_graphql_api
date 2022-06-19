@@ -6,6 +6,9 @@ import redisClient from '../utils/connectRedis.js';
 import { signJwt, verifyJwt } from '../utils/jwt.js';
 import errorHandler from './error.controller.js';
 
+const accessTokenExpireIn = config.get('jwtAccessTokenExpiresIn');
+const refreshTokenExpireIn = config.get('jwtRefreshTokenExpiresIn');
+
 const cookieOptions = {
   httpOnly: true,
   // domain: 'localhost',
@@ -15,14 +18,14 @@ const cookieOptions = {
 
 const accessTokenCookieOptions = {
   ...cookieOptions,
-  maxAge: 15 * 60 * 1000,
-  expires: new Date(Date.now() + 15 * 60 * 1000),
+  maxAge: accessTokenExpireIn * 60 * 1000,
+  expires: new Date(Date.now() + accessTokenExpireIn * 60 * 1000),
 };
 
 const refreshTokenCookieOptions = {
   ...cookieOptions,
-  maxAge: 60 * 60 * 1000,
-  expires: new Date(Date.now() + 60 * 60 * 1000),
+  maxAge: refreshTokenExpireIn * 60 * 1000,
+  expires: new Date(Date.now() + refreshTokenExpireIn * 60 * 1000),
 };
 
 if (process.env.NODE_ENV === 'production') cookieOptions.secure = true;
@@ -90,7 +93,7 @@ const login = async (parent, { input: { email, password } }, { req, res }) => {
     // Add refreshToken to cookie
     res.cookie('refresh_token', refresh_token, refreshTokenCookieOptions);
     res.cookie('access_token', access_token, accessTokenCookieOptions);
-    res.cookie('logged_in', 'true', {
+    res.cookie('logged_in', true, {
       ...accessTokenCookieOptions,
       httpOnly: false,
     });
@@ -140,7 +143,7 @@ const refreshAccessToken = async (parent, args, { req, res }) => {
     // Send access token cookie
     res.cookie('access_token', access_token, accessTokenCookieOptions);
     res.cookie('logged_in', 'true', {
-      accessTokenCookieOptions,
+      ...accessTokenCookieOptions,
       httpOnly: false,
     });
 
@@ -158,8 +161,6 @@ const logoutHandler = async (_, args, { req, res, getAuthUser }) => {
     await checkIsLoggedIn(req, getAuthUser);
 
     const user = await getAuthUser(req);
-
-    console.log(user);
 
     // Delete the user's session
     await redisClient.del(user.id);
