@@ -166,14 +166,9 @@ const logoutHandler = async (_, args, { req, res, getAuthUser }) => {
     await redisClient.del(user.id);
 
     // Logout user
-    res.cookie('access_token', '', { maxAge: -1 }, accessTokenCookieOptions);
-    res.cookie('refresh_token', '', { maxAge: -1 }, refreshTokenCookieOptions);
-    res.cookie(
-      'logged_in',
-      '',
-      { maxAge: -1 },
-      { ...accessTokenCookieOptions, httpOnly: false }
-    );
+    res.cookie('access_token', '', { maxAge: -1 });
+    res.cookie('refresh_token', '', { maxAge: -1 });
+    res.cookie('logged_in', '', { maxAge: -1 });
 
     return true;
   } catch (error) {
