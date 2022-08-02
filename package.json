@@ -23,5 +23,8 @@
     "redis": "^4.1.0",
     "validator": "^13.7.0"
   },
-  "devDependencies": {}
+  "devDependencies": {
+    "@types/morgan": "^1.9.3",
+    "morgan": "^1.10.0"
+  }
 }
