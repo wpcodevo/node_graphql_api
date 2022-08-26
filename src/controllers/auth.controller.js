@@ -63,12 +63,12 @@ async function signTokens(user) {
 
   // Create access token
   const access_token = signJwt({ user: user.id }, 'JWT_ACCESS_PRIVATE_KEY', {
-    expiresIn: config.get('jwtAccessTokenExpiresIn'),
+    expiresIn: `${config.get('jwtAccessTokenExpiresIn')}m`,
   });
 
   // Create refresh token
   const refresh_token = signJwt({ user: user.id }, 'JWT_REFRESH_PRIVATE_KEY', {
-    expiresIn: config.get('jwtRefreshTokenExpiresIn'),
+    expiresIn: `${config.get('jwtRefreshTokenExpiresIn')}m`,
   });
 
   return { access_token, refresh_token };
